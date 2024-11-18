@@ -3,10 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projekt Node.js</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>Logowanie</title>
+    <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-    <h1>Witaj w Projekcie Node.js</h1>
+    <header>
+        <h1>Logowanie</h1>
+    </header>
+    <main>
+        <div class="welcome_text">
+            <h2>Witaj!</h2>
+            <p>Zaloguj się, aby kontynuować.</p>
+        </div>
+        <div class="login">
+            <form action="/login-form" method="POST">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+                <label for="password" class="password">Hasło</label>
+                <input type="password" name="password" id="password" required>
+                <input type="submit" class="submit" value="ZALOGUJ">
+            </form>
+            <form action="/zapomnialem-hasla" method="POST">
+                <label for="emailzap">Email</label>
+                <input id="emailzap" type="email" name="email" required>
+                <input type="submit" class="submit" value="ZAPOMNIAŁEM HASŁA">
+            </form>
+            <p>Jesteś nowy? <a href="register.html">Zarejestruj sie</a></p>
+        </div>
+    </main>
 </body>
 </html>

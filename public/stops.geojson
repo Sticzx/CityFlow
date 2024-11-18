@@ -1,0 +1,89 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [18.9383, 50.2649]
+            },
+            "properties": {
+                "name": "Chorzów Batory",
+                "type": "Bus Stop",
+                "city": "Chorzów"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [19.0202, 50.2598]
+            },
+            "properties": {
+                "name": "Katowice Dworzec PKP",
+                "type": "Bus Stop",
+                "city": "Katowice"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [18.8526, 50.2700]
+            },
+            "properties": {
+                "name": "Gliwice Plac Piastów",
+                "type": "Bus Stop",
+                "city": "Gliwice"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [18.5736, 50.2948]
+            },
+            "properties": {
+                "name": "Rybnik Dworzec Autobusowy",
+                "type": "Bus Stop",
+                "city": "Rybnik"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [19.0312, 50.0732]
+            },
+            "properties": {
+                "name": "Sosnowiec Centrum",
+                "type": "Bus Stop",
+                "city": "Sosnowiec"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [18.9502, 50.0627]
+            },
+            "properties": {
+                "name": "Chorzów Batory",
+                "type": "Bus Stop",
+                "city": "Chorzów"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [18.9951, 50.1228]
+            },
+            "properties": {
+                "name": "Bytom Plac Sikorskiego",
+                "type": "Bus Stop",
+                "city": "Bytom"
+            }
+        }
+    ]
+}

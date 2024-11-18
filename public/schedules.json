@@ -1,0 +1,37 @@
+{
+    "Katowice Rynek": [
+        {"line": "32", "destination": "Tychy", "time": "12:15"},
+        {"line": "32", "destination": "Tychy", "time": "12:45"},
+        {"line": "7", "destination": "Chorzów", "time": "12:30"}
+    ],
+    "Katowice Dworzec PKP": [
+        {"line": "35", "destination": "Mikołów", "time": "12:20"},
+        {"line": "35", "destination": "Mikołów", "time": "12:50"},
+        {"line": "6", "destination": "Sosnowiec", "time": "12:40"}
+    ],
+    "Gliwice Plac Piastów": [
+        {"line": "10", "destination": "Zabrze", "time": "12:25"},
+        {"line": "10", "destination": "Zabrze", "time": "12:55"},
+        {"line": "13", "destination": "Bytom", "time": "12:35"}
+    ],
+    "Rybnik Dworzec Autobusowy": [
+        {"line": "5", "destination": "Jastrzębie", "time": "12:30"},
+        {"line": "5", "destination": "Jastrzębie", "time": "13:00"},
+        {"line": "6", "destination": "Żory", "time": "12:50"}
+    ],
+    "Sosnowiec Centrum": [
+        {"line": "12", "destination": "Dąbrowa Górnicza", "time": "12:35"},
+        {"line": "12", "destination": "Dąbrowa Górnicza", "time": "13:05"},
+        {"line": "14", "destination": "Bytom", "time": "12:45"}
+    ],
+    "Chorzów Batory": [
+        {"line": "4", "destination": "Gliwice", "time": "12:20"},
+        {"line": "4", "destination": "Gliwice", "time": "12:50"},
+        {"line": "8", "destination": "Ruda Śląska", "time": "12:40"}
+    ],
+    "Bytom Plac Sikorskiego": [
+        {"line": "25", "destination": "Katowice", "time": "12:30"},
+        {"line": "25", "destination": "Katowice", "time": "13:00"},
+        {"line": "3", "destination": "Zabrze", "time": "12:45"}
+    ]
+}
