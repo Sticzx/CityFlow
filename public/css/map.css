@@ -57,7 +57,7 @@ h1 {
 
 .search-container button {
     padding: 8px;
-    background-color: #bdbb3b;
+    background-color: #ffd700;
     color: white;
     border: none;
     cursor: pointer;
@@ -65,5 +65,34 @@ h1 {
 }
 
 .search-container button:hover {
-    background-color: #bdbb3b;
+    background-color: #ffd700;
+}
+
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    background-color: #0e0e0e;
+    box-shadow: 0 -1px 5px rgba(255, 255, 255, 0.17);
+    padding: 10px 0;
+    z-index: 10;
+}
+
+.icon-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.icon-container a {
+    text-decoration: none;
+    color: #777;
+    font-size: 24px;
+}
+
+.icon-container a .active {
+    color: #ffd700;
+}
+
+.icon-container a:hover {
+    color: #ffd700;
 }

@@ -16,6 +16,14 @@ app.get('/map.html', (req,res)=>{
   res.sendFile(path.join(__dirname, 'views', 'map.html'));
 })
 
+app.get('/bilety.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'views', 'bilety.html'));
+})
+
+app.get('/index.html', (req,res)=>{
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+})
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Serwer działa na http://localhost:${PORT}`);
