@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "firstName": "Jan",
+      "lastName": "Kowalski",
+      "email": "kowalski.jan@gmail.com",
+      "password": "$2b$10$Qt4OzY5VZvzkT4dvMqVpXutYNY0jSo7Cpbjfl3WLcW8q8yM/Wwv46"
+    }
+  ]
+}

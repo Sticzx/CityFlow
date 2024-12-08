@@ -1,7 +1,16 @@
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+const fs = require('fs');
+const bcrypt = require('bcrypt');
 const app = express();
+
+const USERS_FILE = path.join(__dirname, 'data', 'users.json');
+const SALT_ROUNDS = 10;
+
+if (!fs.existsSync(USERS_FILE)) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify({ users: [] }));
+}
 
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -40,7 +49,7 @@ app.get('/index.html', (req,res)=>{
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 })
 
-app.post('/register-form', (req, res) => {
+app.post('/register-form', async (req, res) => {
   const { firstName, lastName, email, password, repassword } = req.body;
 
   if (!firstName || !lastName || !email || !password || !repassword) {
@@ -58,11 +67,33 @@ app.post('/register-form', (req, res) => {
   if (!email.includes('@')) {
     return res.send('<script>alert("Nieprawidłowy format email!"); window.location.href = "/register.html";</script>');
   }
-  
-  res.send('<script>alert("Rejestracja udana! Możesz się teraz zalogować."); window.location.href = "/index.html";</script>');
+
+  try {
+    const data = JSON.parse(fs.readFileSync(USERS_FILE));
+    
+    if (data.users.some(user => user.email === email)) {
+      return res.send('<script>alert("Ten email jest już zarejestrowany!"); window.location.href = "/register.html";</script>');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    data.users.push({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword
+    });
+
+    fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2));
+    
+    res.send('<script>alert("Rejestracja udana! Możesz się teraz zalogować."); window.location.href = "/index.html";</script>');
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.send('<script>alert("Wystąpił błąd podczas rejestracji."); window.location.href = "/register.html";</script>');
+  }
 });
 
-app.post('/login-form', (req, res) => {
+app.post('/login-form', async (req, res) => {
   const { email, password } = req.body;
     
   if (!email || !password) {
@@ -72,10 +103,29 @@ app.post('/login-form', (req, res) => {
   if (!email.includes('@')) {
     return res.send('<script>alert("Nieprawidłowy format email!"); window.location.href = "/index.html";</script>');
   }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(USERS_FILE));
+    const user = data.users.find(u => u.email === email);
+
+    if (!user) {
+      return res.send('<script>alert("Nieprawidłowy email lub hasło!"); window.location.href = "/index.html";</script>');
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
     
-  req.session.isAuthenticated = true;
-  req.session.userEmail = email;
-  res.redirect('/map.html');
+    if (!passwordMatch) {
+      return res.send('<script>alert("Nieprawidłowy email lub hasło!"); window.location.href = "/index.html";</script>');
+    }
+
+    req.session.isAuthenticated = true;
+    req.session.userEmail = email;
+    req.session.userName = user.firstName;
+    res.redirect('/map.html');
+  } catch (error) {
+    console.error('Login error:', error);
+    res.send('<script>alert("Wystąpił błąd podczas logowania."); window.location.href = "/index.html";</script>');
+  }
 });
 
 app.post('/zapomnialem-hasla', (req, res) => {
