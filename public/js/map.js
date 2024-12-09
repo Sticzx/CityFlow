@@ -15,6 +15,10 @@ const busStopIcon = L.icon({
     popupAnchor: [0, -32]
 });
 
+let routeLine; // Przechowuje linię trasy
+
+let savedRoutes = [];
+
 let allStopsData = []; // Wszystkie przystanki z GTFS
 let visibleMarkers = []; // Markery aktualnie widoczne na mapie
 
@@ -53,33 +57,27 @@ async function loadStopsFromGTFS() {
 
 // Funkcja aktualizująca przystanki widoczne w aktualnym widoku mapy
 function updateVisibleStops() {
-    // Usuń wszystkie aktualne markery
     visibleMarkers.forEach(marker => map.removeLayer(marker));
     visibleMarkers = [];
 
-    // Pobierz poziom zoomu i granice widoku mapy
     const currentZoom = map.getZoom();
     const bounds = map.getBounds();
 
     let stopsInView;
 
-    // Wyświetlaj różne przystanki w zależności od poziomu zoomu
     if (currentZoom < minZoomLevelToShowMainStops) {
         console.log('Za mały zoom, brak przystanków.');
-        return; // Nie renderuj przystanków
+        return;
     } else if (currentZoom < minZoomLevelToShowAllStops) {
-        console.log('Wyświetlanie głównych przystanków');
         stopsInView = allStopsData.filter(stop =>
             bounds.contains([stop.lat, stop.lon]) && stop.isMain
         );
     } else {
-        console.log('Wyświetlanie wszystkich przystanków');
         stopsInView = allStopsData.filter(stop =>
             bounds.contains([stop.lat, stop.lon])
         );
     }
 
-    // Dodaj markery dla przystanków w widoku
     stopsInView.forEach(stop => {
         const marker = L.marker([stop.lat, stop.lon], { icon: busStopIcon })
             .bindPopup(`<b>${stop.name}</b><br>ID: ${stop.id}`)
@@ -89,67 +87,121 @@ function updateVisibleStops() {
     });
 }
 
-// Funkcja wyszukiwania przystanków
-function searchStop() {
-    const searchInput = document.getElementById('searchInput').value.trim().toLowerCase();
+// Funkcja wyznaczania i rysowania trasy
+async function findRoute() {
+    const startStopName = document.getElementById('startStop').value.trim().toLowerCase();
+    const endStopName = document.getElementById('endStop').value.trim().toLowerCase();
 
-    if (!searchInput) {
-        alert("Proszę wprowadzić nazwę przystanku.");
+    if (!startStopName || !endStopName) {
+        alert("Proszę wprowadzić oba przystanki.");
         return;
     }
 
-    // Filtruj przystanki pasujące do wyszukiwanego tekstu
-    const matchedStops = allStopsData.filter(stop =>
-        stop.name.toLowerCase().includes(searchInput)
-    );
+    // Szukamy przystanków
+    const startStop = allStopsData.find(stop => stop.name.toLowerCase().includes(startStopName));
+    const endStop = allStopsData.find(stop => stop.name.toLowerCase().includes(endStopName));
 
-    if (matchedStops.length === 0) {
-        alert("Nie znaleziono przystanku o podanej nazwie.");
+    if (!startStop || !endStop) {
+        alert("Nie znaleziono jednego lub obu przystanków.");
         return;
     }
 
-    // Wybierz tylko jeden przystanek dla każdej unikalnej nazwy
-    const uniqueStops = Array.from(
-        new Map(matchedStops.map(stop => [stop.name.toLowerCase(), stop])).values()
-    );
+    const startCoords = [startStop.lat, startStop.lon];
+    const endCoords = [endStop.lat, endStop.lon];
 
-    if (uniqueStops.length === 1) {
-        const stop = uniqueStops[0];
-        const latlng = L.latLng(stop.lat, stop.lon);
+    try {
+        // Wywołanie API OSRM do obliczenia trasy
+        const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}?overview=full&geometries=geojson`);
+        const data = await response.json();
 
-        // Przesuń mapę do wyszukanego przystanku i ustaw zoom
-        map.setView(latlng, 16);
+        // Usuwamy poprzednią trasę, jeśli istnieje
+        if (routeLine) {
+            map.removeLayer(routeLine);
+        }
 
-        // Usuń wszystkie aktualne markery
-        visibleMarkers.forEach(marker => map.removeLayer(marker));
-        visibleMarkers = [];
+        // Wyciągamy współrzędne trasy
+        const routeCoords = data.routes[0].geometry.coordinates.map(([lon, lat]) => [lat, lon]);
 
-        // Dodaj marker dla wyszukanego przystanku
-        const marker = L.marker(latlng, { icon: busStopIcon })
-            .bindPopup(`<b>${stop.name}</b><br>ID: ${stop.id}`)
+        // Rysujemy trasę na mapie
+        routeLine = L.polyline(routeCoords, { color: 'blue', weight: 5 }).addTo(map);
+        map.fitBounds(routeLine.getBounds());
+
+        // Dodajemy markery dla przystanków początkowego i końcowego, nawet jeśli są poza widokiem
+        const startMarker = L.marker(startCoords, { icon: busStopIcon })
+            .bindPopup(`<b>${startStop.name}</b><br>ID: ${startStop.id}`)
             .addTo(map)
             .openPopup();
 
-        visibleMarkers.push(marker);
-    } else {
-        // Obsługa przypadku, gdy jest wiele unikalnych nazw
-        alert(`Znaleziono wiele przystanków (${uniqueStops.length}) pasujących do wyszukiwania. Wyświetlono pierwszy.`);
-        const stop = uniqueStops[0];
-        const latlng = L.latLng(stop.lat, stop.lon);
-
-        map.setView(latlng, 16);
-
-        visibleMarkers.forEach(marker => map.removeLayer(marker));
-        visibleMarkers = [];
-
-        const marker = L.marker(latlng, { icon: busStopIcon })
-            .bindPopup(`<b>${stop.name}</b><br>ID: ${stop.id}`)
+        const endMarker = L.marker(endCoords, { icon: busStopIcon })
+            .bindPopup(`<b>${endStop.name}</b><br>ID: ${endStop.id}`)
             .addTo(map)
             .openPopup();
 
-        visibleMarkers.push(marker);
+        // Dodajemy markery do widocznych markerów
+        visibleMarkers.push(startMarker, endMarker);
+
+    } catch (error) {
+        console.error("Błąd podczas wyznaczania trasy:", error);
+        alert("Nie udało się wyznaczyć trasy.");
     }
 }
+
+// Funkcja do zapisywania aktualnej trasy
+function saveCurrentRoute() {
+    if (!routeLine) {
+        alert("Nie wyznaczono trasy do zapisania.");
+        return;
+    }
+
+    // Tworzymy obiekt reprezentujący trasę
+    const routeData = {
+        id: savedRoutes.length + 1,
+        start: document.getElementById('startStop').value.trim(),
+        end: document.getElementById('endStop').value.trim(),
+        coordinates: routeLine.getLatLngs(),
+        color: 'blue'
+    };
+
+    // Zapisujemy trasę
+    savedRoutes.push(routeData);
+    updateSavedRoutesList();
+    alert("Trasa została zapisana.");
+}
+
+// Funkcja do wyświetlania zapisanych tras
+function updateSavedRoutesList() {
+    const savedRoutesList = document.getElementById('savedRoutesList');
+    savedRoutesList.innerHTML = '';
+
+    savedRoutes.forEach(route => {
+        const li = document.createElement('li');
+        li.textContent = `${route.start} → ${route.end}`;
+        li.onclick = () => loadSavedRoute(route);
+        savedRoutesList.appendChild(li);
+    });
+}
+
+// Funkcja do ładowania zapisanej trasy
+function loadSavedRoute(route) {
+    // Usuwamy obecną trasę, jeśli istnieje
+    if (routeLine) {
+        map.removeLayer(routeLine);
+    }
+
+    // Rysujemy zapisane współrzędne
+    routeLine = L.polyline(route.coordinates, { color: route.color, weight: 5 }).addTo(map);
+    map.fitBounds(routeLine.getBounds());
+}
+
+// Funkcja do czyszczenia zapisanych tras
+function clearSavedRoutes() {
+    savedRoutes = [];
+    updateSavedRoutesList();
+    alert("Wszystkie zapisane trasy zostały usunięte.");
+}
+
+// Dodajemy zapisane trasy po załadowaniu strony
+document.addEventListener("DOMContentLoaded", updateSavedRoutesList);
 
 // Nasłuchiwanie przesunięcia lub zoomowania mapy
 map.on('moveend', updateVisibleStops);

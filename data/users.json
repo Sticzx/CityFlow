@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "firstName": "Jan",
+      "lastName": "Kowalski",
+      "email": "kowalski.jan@gmail.com",
+      "password": "$2b$10$Qt4OzY5VZvzkT4dvMqVpXutYNY0jSo7Cpbjfl3WLcW8q8yM/Wwv46"
+    },
+    {
+      "firstName": "Mateusz",
+      "lastName": "Sycz",
+      "email": "mateusz2k7@wp.pl",
+      "password": "$2b$10$LzTGxpjCC0ff683XNGHaS.mVkCiGHOmZt2lZyUKuISmyHQOYzRS2K"
+    }
+  ]
+}

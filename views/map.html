@@ -15,12 +15,21 @@
             <img src="imgs/logo.png" alt="logo">
             <h1>CityFlow</h1>
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Wpisz nazwę przystanku">
-                <button onclick="searchStop()">Szukaj</button>
-
+                <input type="text" id="startStop" placeholder="Przystanek początkowy">
+                <input type="text" id="endStop" placeholder="Przystanek końcowy">
+                <button onclick="findRoute()">Pokaż trasę</button>
+                <button onclick="saveCurrentRoute()">Zapisz trasę</button>
             </div>
+            
         </header>
         <div id="map"></div>
+        <div class="saved-routes-container">
+            <h3>Zapisane trasy</h3>
+            <ul id="savedRoutesList">
+                <!-- Lista zapisanych tras -->
+            </ul>
+            <button onclick="clearSavedRoutes()">Wyczyść zapisane trasy</button>
+        </div>
         <footer>
             <div class="icon-container">
                 <a href="map.html"><i class="bi bi-map active"></i></a>
@@ -32,6 +41,6 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <script type="module" src="js/map.js"></script>
+    <script src="js/map.js"></script>
 </body>
 </html>
